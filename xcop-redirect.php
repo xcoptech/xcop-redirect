@@ -2,7 +2,7 @@
 /*
 Plugin Name: XCOP Redirect
 Plugin URI: https://xcoptech.com/xcop-redirect
-Description: A powerful and customizable WordPress plugin that redirects users based on browser history length and referrer source. Perfect for tailoring user experiences, such as redirecting new tab openings from search engines. Features a modern and intuitive admin settings page for easy configuration.
+Description: A powerful and customizable WordPress plugin that redirects users based on browser history length and referrer source. Perfect for tailoring user experiences, such as redirecting new tab openings from search engines. Features a modern admin settings page, easy configuration, and automatic updates via GitHub.
 Version: 1.0.0
 Author: XCOP
 Author URI: https://xcoptech.com/
@@ -13,6 +13,7 @@ License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: xcop-redirect
 Domain Path: /languages
+Update URI: https://raw.githubusercontent.com/xcoptech/xcop-redirect/main/updates/xcop-redirect.json
 */
 
 // Initialize plugin settings
@@ -151,3 +152,73 @@ function xcop_enqueue_scripts() {
     <?php
 }
 add_action('wp_head', 'xcop_enqueue_scripts');
+
+// Check for plugin updates via GitHub
+function xcop_check_for_updates($transient) {
+    if (empty($transient->checked)) {
+        return $transient;
+    }
+
+    $plugin_slug = 'xcop-redirect';
+    $current_version = '1.0.0'; // Must match Version in plugin header
+    $update_url = 'https://raw.githubusercontent.com/xcoptech/xcop-redirect/main/updates/xcop-redirect.json';
+
+    // Get cached response or fetch new data
+    $remote = get_transient('xcop_update_check');
+    if (false === $remote) {
+        $remote = wp_remote_get($update_url, array('timeout' => 10));
+        set_transient('xcop_update_check', $remote, HOUR_IN_SECONDS * 12); // Cache for 12 hours
+    }
+
+    if (!is_wp_error($remote) && isset($remote['response']['code']) && $remote['response']['code'] == 200) {
+        $data = json_decode(wp_remote_retrieve_body($remote));
+        if ($data && version_compare($current_version, $data->version, '<')) {
+            $transient->response[$plugin_slug . '/xcop-redirect.php'] = array(
+                'slug' => $plugin_slug,
+                'new_version' => $data->version,
+                'url' => $data->homepage,
+                'package' => $data->download_link,
+                'tested' => $data->tested,
+                'requires' => $data->requires,
+                'requires_php' => $data->requires_php
+            );
+        }
+    }
+
+    return $transient;
+}
+add_filter('site_transient_update_plugins', 'xcop_check_for_updates');
+
+// Clear transient cache when plugin is updated
+function xcop_clear_update_transient() {
+    delete_transient('xcop_update_check');
+}
+add_action('upgrader_process_complete', 'xcop_clear_update_transient', 10, 2);
+
+// Add update notice in plugins page
+function xcop_update_notice() {
+    $plugin_data = get_plugin_data(__FILE__);
+    $current_version = $plugin_data['Version'];
+    $update_url = 'https://raw.githubusercontent.com/xcoptech/xcop-redirect/main/updates/xcop-redirect.json';
+
+    $remote = get_transient('xcop_update_check');
+    if (false === $remote) {
+        $remote = wp_remote_get($update_url, array('timeout' => 10));
+        set_transient('xcop_update_check', $remote, HOUR_IN_SECONDS * 12);
+    }
+
+    if (!is_wp_error($remote) && isset($remote['response']['code']) && $remote['response']['code'] == 200) {
+        $data = json_decode(wp_remote_retrieve_body($remote));
+        if ($data && version_compare($current_version, $data->version, '<')) {
+            echo '<div class="notice notice-info is-dismissible">';
+            echo '<p>' . sprintf(
+                __('XCOP Redirect %s is available! <a href="%s">Update now</a> or visit the <a href="%s">plugin settings</a> for more details.', 'xcop-redirect'),
+                esc_html($data->version),
+                esc_url(admin_url('plugins.php')),
+                esc_url(admin_url('admin.php?page=xcop-settings'))
+            ) . '</p>';
+            echo '</div>';
+        }
+    }
+}
+add_action('admin_notices', 'xcop_update_notice');
