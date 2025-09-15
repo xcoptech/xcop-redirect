@@ -3,7 +3,7 @@
 Plugin Name: XCOP Redirect
 Plugin URI: https://xcoptech.com/xcop-redirect
 Description: A powerful and customizable WordPress plugin that redirects users based on browser history length and referrer source. Perfect for tailoring user experiences, such as redirecting new tab openings from search engines. Features a modern admin settings page, easy configuration, and automatic updates via GitHub.
-Version: 1.0.0
+Version: 1.1.0
 Author: XCOP
 Author URI: https://xcoptech.com/
 Requires at least: 5.0
