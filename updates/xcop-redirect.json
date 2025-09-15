@@ -1,16 +1,16 @@
 {
     "name": "XCOP Redirect",
     "slug": "xcop-redirect",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "author": "<a href='https://xcoptech.com/'>XCOP</a>",
     "requires": "5.0",
     "tested": "6.6",
     "requires_php": "7.4",
-    "download_link": "https://github.com/xcoptech/xcop-redirect/releases/download/v1.1.0/xcop-redirect-1.1.0.zip",
+    "download_link": "https://github.com/xcoptech/xcop-redirect/releases/download/v1.1.1/xcop-redirect-1.1.1.zip",
     "last_updated": "2025-09-15 20:03:00",
     "homepage": "https://xcoptech.com/xcop-redirect",
     "sections": {
         "description": "A powerful and customizable WordPress plugin that redirects users based on browser history length and referrer source.",
-        "changelog": "<h4>1.1.0 - 2025-09-15</h4><ul><li>Added GitHub-based version checking and update support.</li></ul>"
+        "changelog": "<h4>1.1.1 - 2025-09-15</h4><ul><li>Added GitHub-based version checking and update support.</li></ul>"
     }
 }

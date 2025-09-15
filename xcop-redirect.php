@@ -2,8 +2,8 @@
 /*
 Plugin Name: XCOP Redirect
 Plugin URI: https://xcoptech.com/xcop-redirect
-Description: A powerful and customizable WordPress plugin that redirects users based on browser history length and referrer source. Perfect for tailoring user experiences, such as redirecting new tab openings from search engines. Features a modern admin settings page, easy configuration, and automatic updates via GitHub.
-Version: 1.1.0
+Description: A powerful and customizable WordPress plugin that redirects users based on browser history length and referrer source. Perfect for tailoring user experiences, such as redirecting new tab openings from search engines. Features a modern admin settings page with enable/disable toggle, easy configuration, and automatic updates via GitHub.
+Version: 1.1.1
 Author: XCOP
 Author URI: https://xcoptech.com/
 Requires at least: 5.0
@@ -21,9 +21,11 @@ function xcop_register_settings() {
     add_option('xcop_redirect_url', 'https://example.com');
     add_option('xcop_enable_referrer_check', '0');
     add_option('xcop_referrer_domain', 'google.com');
+    add_option('xcop_enable_redirect', '1'); // Default to enabled
     register_setting('xcop_options_group', 'xcop_redirect_url', 'esc_url_raw');
     register_setting('xcop_options_group', 'xcop_enable_referrer_check', 'sanitize_text_field');
     register_setting('xcop_options_group', 'xcop_referrer_domain', 'sanitize_text_field');
+    register_setting('xcop_options_group', 'xcop_enable_redirect', 'sanitize_text_field');
 }
 add_action('admin_init', 'xcop_register_settings');
 
@@ -57,6 +59,15 @@ function xcop_options_page_html() {
                 ?>
                 <h2>Redirect Configuration</h2>
                 <table class="form-table">
+                    <tr>
+                        <th scope="row">
+                            <label for="xcop_enable_redirect">Enable Redirect</label>
+                            <span class="description">Toggle to enable or disable the redirect functionality.</span>
+                        </th>
+                        <td>
+                            <input type="checkbox" id="xcop_enable_redirect" name="xcop_enable_redirect" value="1" <?php checked(get_option('xcop_enable_redirect', '1'), '1'); ?> />
+                        </td>
+                    </tr>
                     <tr>
                         <th scope="row">
                             <label for="xcop_redirect_url">Redirect URL</label>
@@ -132,6 +143,11 @@ function xcop_options_page_html() {
 
 // Enqueue JavaScript for redirect logic
 function xcop_enqueue_scripts() {
+    $enable_redirect = get_option('xcop_enable_redirect', '1');
+    if ($enable_redirect !== '1') {
+        return; // Skip if redirect is disabled
+    }
+
     $redirect_url = get_option('xcop_redirect_url', 'https://example.com');
     $enable_referrer_check = get_option('xcop_enable_referrer_check', '0');
     $referrer_domain = get_option('xcop_referrer_domain', 'google.com');
@@ -160,7 +176,7 @@ function xcop_check_for_updates($transient) {
     }
 
     $plugin_slug = 'xcop-redirect';
-    $current_version = '1.1.0'; // Must match Version in plugin header
+    $current_version = '1.1.1'; // Must match Version in plugin header
     $update_url = 'https://raw.githubusercontent.com/xcoptech/xcop-redirect/main/updates/xcop-redirect.json';
 
     // Get cached response or fetch new data
