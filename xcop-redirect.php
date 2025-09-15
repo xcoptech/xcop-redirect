@@ -160,7 +160,7 @@ function xcop_check_for_updates($transient) {
     }
 
     $plugin_slug = 'xcop-redirect';
-    $current_version = '1.0.0'; // Must match Version in plugin header
+    $current_version = '1.1.0'; // Must match Version in plugin header
     $update_url = 'https://raw.githubusercontent.com/xcoptech/xcop-redirect/main/updates/xcop-redirect.json';
 
     // Get cached response or fetch new data
