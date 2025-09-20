@@ -3,7 +3,7 @@
 Plugin Name: XCOP Redirect
 Plugin URI: https://xcoptech.com/xcop-redirect
 Description: A powerful and customizable WordPress plugin that redirects users based on browser history length and referrer source. Perfect for tailoring user experiences, such as redirecting new tab openings from search engines. Features a modern admin settings page with enable/disable toggle, easy configuration, and automatic updates via GitHub.
-Version: 1.1.1
+Version: 1.1.2
 Author: XCOP
 Author URI: https://xcoptech.com/
 Requires at least: 5.0
@@ -142,6 +142,34 @@ function xcop_options_page_html() {
 }
 
 // Enqueue JavaScript for redirect logic
+// function xcop_enqueue_scripts() {
+//     $enable_redirect = get_option('xcop_enable_redirect', '1');
+//     if ($enable_redirect !== '1') {
+//         return; // Skip if redirect is disabled
+//     }
+
+//     $redirect_url = get_option('xcop_redirect_url', 'https://example.com');
+//     $enable_referrer_check = get_option('xcop_enable_referrer_check', '0');
+//     $referrer_domain = get_option('xcop_referrer_domain', 'google.com');
+//     ?>
+//     <script>
+//         document.addEventListener('DOMContentLoaded', function() {
+//             const referrer = document.referrer || '';
+//             const shouldCheckReferrer = <?php echo json_encode($enable_referrer_check === '1'); ?>;
+//             const referrerDomain = <?php echo json_encode($referrer_domain); ?>;
+//             const shouldRedirect = window.history.length === 1 && 
+//                 (!shouldCheckReferrer || referrer.includes(referrerDomain));
+
+//             if (shouldRedirect) {
+//                 window.location.href = '<?php echo esc_url($redirect_url); ?>';
+//             }
+//         });
+//     </script>
+//     <?php
+// }
+// add_action('wp_head', 'xcop_enqueue_scripts');
+
+// Enqueue JavaScript for redirect logic
 function xcop_enqueue_scripts() {
     $enable_redirect = get_option('xcop_enable_redirect', '1');
     if ($enable_redirect !== '1') {
@@ -151,21 +179,25 @@ function xcop_enqueue_scripts() {
     $redirect_url = get_option('xcop_redirect_url', 'https://example.com');
     $enable_referrer_check = get_option('xcop_enable_referrer_check', '0');
     $referrer_domain = get_option('xcop_referrer_domain', 'google.com');
-    ?>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const referrer = document.referrer || '';
-            const shouldCheckReferrer = <?php echo json_encode($enable_referrer_check === '1'); ?>;
-            const referrerDomain = <?php echo json_encode($referrer_domain); ?>;
-            const shouldRedirect = window.history.length === 1 && 
-                (!shouldCheckReferrer || referrer.includes(referrerDomain));
 
-            if (shouldRedirect) {
-                window.location.href = '<?php echo esc_url($redirect_url); ?>';
-            }
-        });
-    </script>
-    <?php
+    // เช็คเฉพาะหน้าหลัก
+    if (is_front_page() || is_home()) {
+        ?>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const referrer = document.referrer || '';
+                const shouldCheckReferrer = <?php echo json_encode($enable_referrer_check === '1'); ?>;
+                const referrerDomain = <?php echo json_encode($referrer_domain); ?>;
+
+                const shouldRedirect = !shouldCheckReferrer || referrer.includes(referrerDomain);
+
+                if (shouldRedirect) {
+                    window.location.href = '<?php echo esc_url($redirect_url); ?>';
+                }
+            });
+        </script>
+        <?php
+    }
 }
 add_action('wp_head', 'xcop_enqueue_scripts');
 
@@ -176,7 +208,7 @@ function xcop_check_for_updates($transient) {
     }
 
     $plugin_slug = 'xcop-redirect';
-    $current_version = '1.1.1'; // Must match Version in plugin header
+    $current_version = '1.1.2'; // Must match Version in plugin header
     $update_url = 'https://raw.githubusercontent.com/xcoptech/xcop-redirect/main/updates/xcop-redirect.json';
 
     // Get cached response or fetch new data
