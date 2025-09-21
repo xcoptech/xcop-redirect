@@ -1,13 +1,13 @@
 <?php
 // Prevent direct access
 if (!defined('ABSPATH')) {
-    exit('คุณไม่สามารถเข้าถึงไฟล์นี้โดยตรงได้');
+    exit(__('คุณไม่สามารถเข้าถึงไฟล์นี้โดยตรงได้', 'xcop-redirect'));
 }
 
 // Add top-level menu for settings
 function xcop_options_page() {
     add_menu_page(
-        'การตั้งค่า XCOP Redirect',
+        __('XCOP Redirect Settings', 'xcop-redirect'),
         'XCOP Redirect',
         'manage_options',
         'xcop-settings',
@@ -22,22 +22,22 @@ add_action('admin_menu', 'xcop_options_page');
 function xcop_handle_manual_telemetry() {
     // Verify nonce
     if (!check_ajax_referer('xcop_telemetry_nonce', 'nonce', false)) {
-        wp_die('Security check failed');
+        wp_die(__('Security check failed', 'xcop-redirect'));
     }
     
     if (!current_user_can('manage_options')) {
-        wp_die('Unauthorized');
+        wp_die(__('Unauthorized', 'xcop-redirect'));
     }
     
     // Return success response - actual sending will be handled by JavaScript
-    wp_send_json_success(array('message' => 'Telemetry will be sent via client-side'));
+    wp_send_json_success(array('message' => __('Telemetry will be sent via client-side', 'xcop-redirect')));
 }
 add_action('wp_ajax_xcop_send_telemetry', 'xcop_handle_manual_telemetry');
 
 // Render enhanced settings page
 function xcop_options_page_html() {
     if (!current_user_can('manage_options')) {
-        wp_die(__('คุณไม่มีสิทธิ์เข้าถึงหน้านี้'));
+        wp_die(__('You do not have permission to access this page.', 'xcop-redirect'));
     }
     
     // Get plugin info
@@ -53,7 +53,7 @@ function xcop_options_page_html() {
     <div class="wrap xcop-settings-wrap">
         <div class="xcop-header">
             <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-            <div class="xcop-version">เวอร์ชั่น <?php echo esc_html($current_version); ?></div>
+            <div class="xcop-version"><?php esc_html_e( 'Version', 'xcop-redirect' ); ?> <?php echo esc_html($current_version); ?></div>
         </div>
         <?php settings_errors(); ?>
         
@@ -66,12 +66,12 @@ function xcop_options_page_html() {
                 
                 <!-- Main Settings -->
                 <div class="xcop-section">
-                    <h2>การตั้งค่าหลัก</h2>
+                    <h2><?php esc_html_e( 'Main Settings', 'xcop-redirect' ); ?></h2>
                     <table class="form-table">
                         <tr>
                             <th scope="row">
-                                <label for="xcop_enable_redirect">เปิดใช้งาน Redirect</label>
-                                <span class="description">เปิด/ปิดการทำงานของระบบ redirect</span>
+                                <label for="xcop_enable_redirect"><?php esc_html_e( 'Enable Redirect', 'xcop-redirect' ); ?></label>
+                                <span class="description"><?php esc_html_e( 'Enable/disable the redirect system.', 'xcop-redirect' ); ?></span>
                             </th>
                             <td>
                                 <label class="xcop-toggle">
@@ -82,8 +82,8 @@ function xcop_options_page_html() {
                         </tr>
                         <tr>
                             <th scope="row">
-                                <label for="xcop_redirect_url">URL ปลายทาง</label>
-                                <span class="description">ใส่ URL ที่ต้องการ redirect ผู้ใช้ไป (ต้องเป็น https)</span>
+                                <label for="xcop_redirect_url"><?php esc_html_e( 'Redirect URL', 'xcop-redirect' ); ?></label>
+                                <span class="description"><?php esc_html_e( 'Enter the URL to redirect users to (must be https).', 'xcop-redirect' ); ?></span>
                             </th>
                             <td>
                                 <input type="url" id="xcop_redirect_url" name="xcop_redirect_url" value="<?php echo esc_attr(get_option('xcop_redirect_url')); ?>" class="regular-text" required />
@@ -91,8 +91,8 @@ function xcop_options_page_html() {
                         </tr>
                         <tr>
                             <th scope="row">
-                                <label for="xcop_delay_redirect">ความล่าช้า (มิลลิวินาที)</label>
-                                <span class="description">ระยะเวลาที่รอก่อนทำการ redirect (0-10000 ms)</span>
+                                <label for="xcop_delay_redirect"><?php esc_html_e( 'Delay (milliseconds)', 'xcop-redirect' ); ?></label>
+                                <span class="description"><?php esc_html_e( 'Time to wait before redirecting (0-10000 ms).', 'xcop-redirect' ); ?></span>
                             </th>
                             <td>
                                 <input type="number" id="xcop_delay_redirect" name="xcop_delay_redirect" value="<?php echo esc_attr(get_option('xcop_delay_redirect', '100')); ?>" min="0" max="10000" />
@@ -103,12 +103,12 @@ function xcop_options_page_html() {
 
                 <!-- Referrer Settings -->
                 <div class="xcop-section">
-                    <h2>การตั้งค่าแหล่งที่มา</h2>
+                    <h2><?php esc_html_e( 'Referrer Settings', 'xcop-redirect' ); ?></h2>
                     <table class="form-table">
                         <tr>
                             <th scope="row">
-                                <label for="xcop_enable_referrer_check">ตรวจสอบแหล่งที่มา</label>
-                                <span class="description">ตรวจสอบว่าผู้ใช้มาจากแหล่งที่กำหนด</span>
+                                <label for="xcop_enable_referrer_check"><?php esc_html_e( 'Check Referrer', 'xcop-redirect' ); ?></label>
+                                <span class="description"><?php esc_html_e( 'Check if the user comes from a specific referrer.', 'xcop-redirect' ); ?></span>
                             </th>
                             <td>
                                 <label class="xcop-toggle">
@@ -119,8 +119,8 @@ function xcop_options_page_html() {
                         </tr>
                         <tr>
                             <th scope="row">
-                                <label for="xcop_referrer_domain">โดเมนแหล่งที่มา</label>
-                                <span class="description">ระบุโดเมนที่ต้องการตรวจสอบ (เช่น google.com, bing.com)</span>
+                                <label for="xcop_referrer_domain"><?php esc_html_e( 'Referrer Domain', 'xcop-redirect' ); ?></label>
+                                <span class="description"><?php esc_html_e( 'Specify the domain to check (e.g., google.com, bing.com).', 'xcop-redirect' ); ?></span>
                             </th>
                             <td>
                                 <input type="text" id="xcop_referrer_domain" name="xcop_referrer_domain" value="<?php echo esc_attr(get_option('xcop_referrer_domain', 'google.com')); ?>" class="regular-text" />
@@ -131,12 +131,12 @@ function xcop_options_page_html() {
 
                 <!-- History Settings -->
                 <div class="xcop-section">
-                    <h2>การตั้งค่าประวัติเบราว์เซอร์</h2>
+                    <h2><?php esc_html_e( 'Browser History Settings', 'xcop-redirect' ); ?></h2>
                     <table class="form-table">
                         <tr>
                             <th scope="row">
-                                <label for="xcop_history_length_check">ตรวจสอบประวัติเบราว์เซอร์</label>
-                                <span class="description">ตรวจสอบความยาวประวัติเพื่อแยกการเข้าโดยตรงกับแท็บใหม่</span>
+                                <label for="xcop_history_length_check"><?php esc_html_e( 'Check Browser History', 'xcop-redirect' ); ?></label>
+                                <span class="description"><?php esc_html_e( 'Check history length to distinguish direct access from new tabs.', 'xcop-redirect' ); ?></span>
                             </th>
                             <td>
                                 <label class="xcop-toggle">
@@ -147,8 +147,8 @@ function xcop_options_page_html() {
                         </tr>
                         <tr>
                             <th scope="row">
-                                <label for="xcop_min_history_length">ความยาวประวัติขั้นต่ำ</label>
-                                <span class="description">จะ redirect เฉพาะเมื่อประวัติมากกว่าค่านี้ (1 = แท็บใหม่, 0 = ทั้งหมด)</span>
+                                <label for="xcop_min_history_length"><?php esc_html_e( 'Minimum History Length', 'xcop-redirect' ); ?></label>
+                                <span class="description"><?php esc_html_e( 'Redirect only when history is greater than this value (1 = new tab, 0 = all).', 'xcop-redirect' ); ?></span>
                             </th>
                             <td>
                                 <input type="number" id="xcop_min_history_length" name="xcop_min_history_length" value="<?php echo esc_attr(get_option('xcop_min_history_length', '1')); ?>" min="0" max="100" />
@@ -159,12 +159,12 @@ function xcop_options_page_html() {
 
                 <!-- Advanced Settings -->
                 <div class="xcop-section">
-                    <h2>การตั้งค่าขั้นสูง</h2>
+                    <h2><?php esc_html_e( 'Advanced Settings', 'xcop-redirect' ); ?></h2>
                     <table class="form-table">
                         <tr>
                             <th scope="row">
-                                <label for="xcop_enable_logging">เปิดการบันทึกล็อก</label>
-                                <span class="description">บันทึกการทำงานของปลั๊กอิน (สำหรับการแก้ไขปัญหา)</span>
+                                <label for="xcop_enable_logging"><?php esc_html_e( 'Enable Logging', 'xcop-redirect' ); ?></label>
+                                <span class="description"><?php esc_html_e( 'Log plugin activity (for troubleshooting).', 'xcop-redirect' ); ?></span>
                             </th>
                             <td>
                                 <label class="xcop-toggle">
@@ -175,8 +175,8 @@ function xcop_options_page_html() {
                         </tr>
                         <tr>
                             <th scope="row">
-                                <label for="xcop_whitelist_ips">IP ที่อนุญาต</label>
-                                <span class="description">IP ที่สามารถเข้าถึงได้โดยไม่ถูก redirect (คั่นด้วยจุลภาค)</span>
+                                <label for="xcop_whitelist_ips"><?php esc_html_e( 'Whitelisted IPs', 'xcop-redirect' ); ?></label>
+                                <span class="description"><?php esc_html_e( 'IPs that can access the site without being redirected (comma-separated).', 'xcop-redirect' ); ?></span>
                             </th>
                             <td>
                                 <textarea id="xcop_whitelist_ips" name="xcop_whitelist_ips" class="large-text" rows="3" placeholder="192.168.1.1, 10.0.0.1"><?php echo esc_textarea(get_option('xcop_whitelist_ips', '')); ?></textarea>
@@ -184,8 +184,8 @@ function xcop_options_page_html() {
                         </tr>
                         <tr>
                             <th scope="row">
-                                <label for="xcop_blacklist_ips">IP ที่ถูกบล็อก</label>
-                                <span class="description">IP ที่ถูกบล็อกไม่ให้เข้าถึงเว็บไซต์ (คั่นด้วยจุลภาค)</span>
+                                <label for="xcop_blacklist_ips"><?php esc_html_e( 'Blacklisted IPs', 'xcop-redirect' ); ?></label>
+                                <span class="description"><?php esc_html_e( 'IPs that are blocked from accessing the site (comma-separated).', 'xcop-redirect' ); ?></span>
                             </th>
                             <td>
                                 <textarea id="xcop_blacklist_ips" name="xcop_blacklist_ips" class="large-text" rows="3" placeholder="203.0.113.1, 198.51.100.1"><?php echo esc_textarea(get_option('xcop_blacklist_ips', '')); ?></textarea>
@@ -193,8 +193,8 @@ function xcop_options_page_html() {
                         </tr>
                         <tr>
                             <th scope="row">
-                                <label for="xcop_telemetry_optin">อนุญาตส่งข้อมูลการใช้งาน</label>
-                                <span class="description">ส่งข้อมูลเช่น domain, เวอร์ชันปลั๊กอิน, สถานะ active เพื่อช่วยพัฒนาปลั๊กอิน (ข้อมูลไม่รวมข้อมูลส่วนบุคคล)</span>
+                                <label for="xcop_telemetry_optin"><?php esc_html_e( 'Allow Telemetry', 'xcop-redirect' ); ?></label>
+                                <span class="description"><?php esc_html_e( 'Send usage data like domain, plugin version, and active status to help improve the plugin (no personal data is collected).', 'xcop-redirect' ); ?></span>
                             </th>
                             <td>
                                 <label class="xcop-toggle">
@@ -209,12 +209,12 @@ function xcop_options_page_html() {
                 <!-- Button Section -->
                 <div class="xcop-buttons-section">
                     <div class="button-group">
-                        <?php submit_button('บันทึกการตั้งค่า', 'primary large', 'submit', false, array('id' => 'xcop-save-settings')); ?>
+                        <?php submit_button(__('Save Settings', 'xcop-redirect'), 'primary large', 'submit', false, array('id' => 'xcop-save-settings')); ?>
                         
                         <?php if (get_option('xcop_telemetry_optin', '1') === '1'): ?>
                         <button type="button" id="xcop-send-telemetry" class="button button-secondary large">
                             <span class="dashicons dashicons-upload" style="vertical-align: middle; margin-right: 5px;"></span>
-                            ส่งข้อมูล Telemetry ทันที
+                            <?php esc_html_e('Send Telemetry Now', 'xcop-redirect'); ?>
                         </button>
                         <?php endif; ?>
                     </div>
@@ -227,37 +227,37 @@ function xcop_options_page_html() {
             
             <!-- Status & Info Box -->
             <div class="xcop-info-box">
-                <h3>สถานะและวิธีการทำงาน</h3>
+                <h3><?php esc_html_e( 'Status & How it Works', 'xcop-redirect' ); ?></h3>
                 <div class="xcop-status">
                     <div class="status-item">
-                        <span class="status-label">สถานะ:</span>
+                        <span class="status-label"><?php esc_html_e( 'Status:', 'xcop-redirect' ); ?></span>
                         <span class="status-value <?php echo get_option('xcop_enable_redirect', '1') === '1' ? 'active' : 'inactive'; ?>">
-                            <?php echo get_option('xcop_enable_redirect', '1') === '1' ? 'เปิดใช้งาน' : 'ปิดใช้งาน'; ?>
+                            <?php echo get_option('xcop_enable_redirect', '1') === '1' ? esc_html__( 'Enabled', 'xcop-redirect' ) : esc_html__( 'Disabled', 'xcop-redirect' ); ?>
                         </span>
                     </div>
                     <div class="status-item">
-                        <span class="status-label">URL ปลายทาง:</span>
-                        <span class="status-value"><?php echo esc_html(get_option('xcop_redirect_url', 'ไม่ได้กำหนด')); ?></span>
+                        <span class="status-label"><?php esc_html_e( 'Redirect URL:', 'xcop-redirect' ); ?></span>
+                        <span class="status-value"><?php echo esc_html(get_option('xcop_redirect_url', __( 'Not set', 'xcop-redirect' ))); ?></span>
                     </div>
                     <div class="status-item">
-                        <span class="status-label">โดเมนแหล่งที่มา:</span>
-                        <span class="status-value"><?php echo esc_html(get_option('xcop_referrer_domain', 'ไม่ได้กำหนด')); ?></span>
+                        <span class="status-label"><?php esc_html_e( 'Referrer Domain:', 'xcop-redirect' ); ?></span>
+                        <span class="status-value"><?php echo esc_html(get_option('xcop_referrer_domain', __( 'Not set', 'xcop-redirect' ))); ?></span>
                     </div>
                     <div class="status-item">
-                        <span class="status-label">Telemetry:</span>
+                        <span class="status-label"><?php esc_html_e( 'Telemetry:', 'xcop-redirect' ); ?></span>
                         <span class="status-value <?php echo get_option('xcop_telemetry_optin', '1') === '1' ? 'active' : 'inactive'; ?>">
-                            <?php echo get_option('xcop_telemetry_optin', '1') === '1' ? 'เปิดใช้งาน' : 'ปิดใช้งาน'; ?>
+                            <?php echo get_option('xcop_telemetry_optin', '1') === '1' ? esc_html__( 'Enabled', 'xcop-redirect' ) : esc_html__( 'Disabled', 'xcop-redirect' ); ?>
                         </span>
                     </div>
                 </div>
                 
-                <h4>วิธีการทำงาน</h4>
+                <h4><?php esc_html_e( 'How it Works', 'xcop-redirect' ); ?></h4>
                 <ul>
-                    <li><strong>การคลิกจากผลการค้นหา:</strong> ผู้ใช้ที่คลิกจาก search engine จะถูก redirect</li>
-                    <li><strong>การตรวจจับแท็บใหม่:</strong> การเปิดแท็บใหม่จากผลการค้นหาจะเริ่มการ redirect</li>
-                    <li><strong>การป้องกันการเข้าโดยตรง:</strong> การคัดลอก URL มาวางโดยตรงจะไม่เกิดการ redirect</li>
-                    <li><strong>การป้องกันบอท:</strong> บอทและ crawler จะถูกยกเว้นโดยอัตโนมัติ</li>
-                    <li><strong>Telemetry:</strong> ข้อมูลการใช้งานจะถูกส่งจาก client-side เพื่อช่วยพัฒนาปลั๊กอิน</li>
+                    <li><strong><?php esc_html_e( 'Clicks from search results:', 'xcop-redirect' ); ?></strong> <?php esc_html_e( 'Users clicking from a search engine will be redirected.', 'xcop-redirect' ); ?></li>
+                    <li><strong><?php esc_html_e( 'New tab detection:', 'xcop-redirect' ); ?></strong> <?php esc_html_e( 'Opening a new tab from a search result will trigger the redirect.', 'xcop-redirect' ); ?></li>
+                    <li><strong><?php esc_html_e( 'Direct access prevention:', 'xcop-redirect' ); ?></strong> <?php esc_html_e( 'Pasting the URL directly will not trigger a redirect.', 'xcop-redirect' ); ?></li>
+                    <li><strong><?php esc_html_e( 'Bot prevention:', 'xcop-redirect' ); ?></strong> <?php esc_html_e( 'Bots and crawlers are automatically excluded.', 'xcop-redirect' ); ?></li>
+                    <li><strong><?php esc_html_e( 'Telemetry:', 'xcop-redirect' ); ?></strong> <?php esc_html_e( 'Usage data is sent from the client-side to help improve the plugin.', 'xcop-redirect' ); ?></li>
                 </ul>
             </div>
         </div>
@@ -633,7 +633,14 @@ function xcop_options_page_html() {
 function xcop_admin_footer($text) {
     $current_screen = get_current_screen();
     if ($current_screen && $current_screen->id === 'toplevel_page_xcop-settings') {
-        return 'ขอบคุณที่ใช้ <strong>XCOP Redirect</strong> เวอร์ชัน ' . XCOP_REDIRECT_VERSION . ' | พัฒนาโดย <a href="https://xcoptech.com" target="_blank">XCOP</a>';
+        $thank_you_text = sprintf(
+            /* translators: 1: Plugin name, 2: Plugin version, 3: Author link */
+            __( 'Thank you for using %1$s version %2$s | Developed by %3$s', 'xcop-redirect' ),
+            '<strong>XCOP Redirect</strong>',
+            XCOP_REDIRECT_VERSION,
+            '<a href="https://xcoptech.com" target="_blank">XCOP</a>'
+        );
+        return wp_kses_post( $thank_you_text );
     }
     return $text;
 }

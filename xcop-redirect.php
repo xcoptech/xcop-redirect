@@ -19,14 +19,15 @@ Network: false
 
 // Prevent direct access
 if (!defined('ABSPATH')) {
-    exit('คุณไม่สามารถเข้าถึงไฟล์นี้โดยตรงได้');
+    exit(__( 'You cannot access this file directly.', 'xcop-redirect' ));
 }
 
 // Define plugin constants
 define('XCOP_REDIRECT_VERSION', '1.2.0');
 define('XCOP_REDIRECT_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('XCOP_REDIRECT_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('XCOP_TELEMETRY_API_URL', 'http://localhost:8000/api/v1/telemetry'); // API endpoint
+// Define a constant for the telemetry API URL. Replace with your actual endpoint.
+define('XCOP_TELEMETRY_API_URL', ''); // API endpoint
 
 // Include required files
 require_once XCOP_REDIRECT_PLUGIN_PATH . 'includes/admin-settings.php';
@@ -144,7 +145,7 @@ function xcop_dashboard_widget() {
     
     wp_add_dashboard_widget(
         'xcop_redirect_status',
-        'XCOP Redirect Status',
+    __( 'XCOP Redirect Status', 'xcop-redirect' ),
         'xcop_dashboard_widget_content'
     );
 }
@@ -156,11 +157,11 @@ function xcop_dashboard_widget_content() {
     $referrer_domain = get_option('xcop_referrer_domain', '');
     
     echo '<div style="padding: 10px;">';
-    echo '<p><strong>สถานะ:</strong> <span style="color: ' . ($is_enabled ? '#28a745' : '#dc3545') . ';">' . ($is_enabled ? 'เปิดใช้งาน' : 'ปิดใช้งาน') . '</span></p>';
+    echo '<p><strong>' . esc_html__( 'Status:', 'xcop-redirect' ) . '</strong> <span style="color: ' . ($is_enabled ? '#28a745' : '#dc3545') . ';">' . ($is_enabled ? esc_html__( 'Enabled', 'xcop-redirect' ) : esc_html__( 'Disabled', 'xcop-redirect' )) . '</span></p>';
     if ($is_enabled) {
-        echo '<p><strong>URL ปลายทาง:</strong> <code>' . esc_html($redirect_url) . '</code></p>';
-        echo '<p><strong>โดเมนแหล่งที่มา:</strong> <code>' . esc_html($referrer_domain) . '</code></p>';
+        echo '<p><strong>' . esc_html__( 'Redirect URL:', 'xcop-redirect' ) . '</strong> <code>' . esc_html($redirect_url) . '</code></p>';
+        echo '<p><strong>' . esc_html__( 'Referrer Domain:', 'xcop-redirect' ) . '</strong> <code>' . esc_html($referrer_domain) . '</code></p>';
     }
-    echo '<p><a href="' . admin_url('admin.php?page=xcop-settings') . '" class="button-primary">จัดการการตั้งค่า</a></p>';
+    echo '<p><a href="' . admin_url('admin.php?page=xcop-settings') . '" class="button-primary">' . esc_html__( 'Manage Settings', 'xcop-redirect' ) . '</a></p>';
     echo '</div>';
 }
